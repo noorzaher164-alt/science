@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مراجعة العلوم - الصف التاسع</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0f1e; --card:#111827; --card2:#1a2235; --border:#1e3a5f;
+  --a1:#00c9ff; --a2:#7c3aed; --a3:#10b981; --a4:#f59e0b; --a5:#ef4444;
+  --text:#e2e8f0; --muted:#64748b; --ok:#10b981; --err:#ef4444;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(0,201,255,.06),transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(124,58,237,.06),transparent 50%);pointer-events:none;z-index:0}
+.wrap{max-width:900px;margin:0 auto;padding:18px 14px;position:relative;z-index:1}
+
+/* HEADER */
+.hdr{text-align:center;padding:28px 0 20px;animation:fdwn .6s ease}
+.badge{display:inline-block;background:linear-gradient(135deg,var(--a2),var(--a1));color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:20px;letter-spacing:1px;margin-bottom:10px}
+.hdr h1{font-family:'Cairo',sans-serif;font-size:clamp(20px,5vw,34px);font-weight:900;background:linear-gradient(135deg,var(--a1),#a78bfa,var(--a3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2;margin-bottom:6px}
+.hdr p{color:var(--muted);font-size:13px}
+
+/* STATS */
+.stats{display:flex;gap:10px;margin-bottom:18px;animation:fdup .6s ease .1s both}
+.sc{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center}
+.sc .n{font-size:clamp(18px,4vw,26px);font-weight:900;font-family:'Cairo',sans-serif}
+.sc .l{font-size:11px;color:var(--muted);margin-top:1px}
+.sc.ok .n{color:var(--ok)} .sc.err .n{color:var(--err)} .sc.tot .n{color:var(--a1)} .sc.str .n{color:var(--a4)}
+
+/* TABS */
+.tabs{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px;scrollbar-width:none;animation:fdup .6s ease .15s both}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:7px 16px;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .22s;white-space:nowrap}
+.tab:hover{border-color:var(--a1);color:var(--a1)}
+.tab.on{background:var(--a1);border-color:var(--a1);color:#0a0f1e;font-weight:700}
+
+/* MODE */
+.modes{display:flex;gap:8px;margin-bottom:16px;animation:fdup .6s ease .2s both}
+.mb{flex:1;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:11px 6px;text-align:center;cursor:pointer;transition:all .22s;font-family:'Tajawal',sans-serif}
+.mb .ic{font-size:20px;display:block;margin-bottom:3px}
+.mb .nm{font-size:11px;font-weight:600;color:var(--muted)}
+.mb:hover{border-color:var(--a2)}
+.mb.on{background:linear-gradient(135deg,rgba(124,58,237,.18),rgba(0,201,255,.09));border-color:var(--a2)}
+.mb.on .nm{color:var(--text)}
+
+/* PROGRESS */
+.pgwrap{background:var(--card2);border-radius:30px;height:5px;margin-bottom:16px;overflow:hidden}
+.pgfill{height:100%;background:linear-gradient(90deg,var(--a2),var(--a1));border-radius:30px;transition:width .4s ease}
+
+/* Q CARD */
+.qcard{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:14px;position:relative;overflow:hidden;animation:fdup .35s ease}
+.qcard::before{content:'';position:absolute;top:0;right:0;width:4px;height:100%;border-radius:0 18px 18px 0}
+.qcard.plant::before{background:var(--a3)} .qcard.human::before{background:var(--a4)} .qcard.universe::before{background:var(--a2)} .qcard.disease::before{background:var(--a5)}
+.qmeta{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.ubadge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:16px}
+.ubadge.plant{background:rgba(16,185,129,.1);color:var(--a3);border:1px solid rgba(16,185,129,.2)}
+.ubadge.human{background:rgba(245,158,11,.1);color:var(--a4);border:1px solid rgba(245,158,11,.2)}
+.ubadge.universe{background:rgba(124,58,237,.1);color:#a78bfa;border:1px solid rgba(124,58,237,.2)}
+.ubadge.disease{background:rgba(239,68,68,.1);color:var(--a5);border:1px solid rgba(239,68,68,.2)}
+.qnum{font-size:12px;color:var(--muted);margin-right:auto}
+.qtxt{font-size:clamp(14px,3vw,17px);font-weight:600;line-height:1.75;margin-bottom:18px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:480px){.opts{grid-template-columns:1fr}}
+.opt{background:var(--card2);border:1.5px solid var(--border);border-radius:11px;padding:10px 14px;text-align:right;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:500;color:var(--text);transition:all .18s;display:flex;align-items:center;gap:9px}
+.opt .lt{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;color:var(--muted);transition:all .18s}
+.opt:hover:not(:disabled){border-color:var(--a1);background:rgba(0,201,255,.05)}
+.opt:hover:not(:disabled) .lt{background:var(--a1);color:#0a0f1e;border-color:var(--a1)}
+.opt.cpick{border-color:var(--ok);background:rgba(16,185,129,.1);animation:pgreen .5s ease}
+.opt.cpick .lt{background:var(--ok);color:#fff;border-color:var(--ok)}
+.opt.wpick{border-color:var(--err);background:rgba(239,68,68,.1);animation:shk .4s ease}
+.opt.wpick .lt{background:var(--err);color:#fff;border-color:var(--err)}
+.opt.rvc{border-color:var(--ok);background:rgba(16,185,129,.07)}
+.opt.rvc .lt{background:var(--ok);color:#fff;border-color:var(--ok)}
+.opt:disabled{cursor:default}
+
+/* FEEDBACK */
+.fb{background:var(--card);border-radius:12px;padding:12px 16px;margin-bottom:14px;display:none;align-items:center;gap:10px;animation:sld .3s ease}
+.fb.show{display:flex}
+.fb.cfb{border:1px solid var(--ok);background:rgba(16,185,129,.07)}
+.fb.wfb{border:1px solid var(--err);background:rgba(239,68,68,.07)}
+.fb .fi{font-size:22px;flex-shrink:0}
+.fb .ft{font-size:13px;font-weight:600;flex:1;line-height:1.6}
+.fb .ft .ca{color:var(--ok);font-weight:700}
+
+/* NAV */
+.nav{display:flex;gap:8px;align-items:center;margin-bottom:18px}
+.nb{flex:1;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:11px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px}
+.nb:hover{border-color:var(--a1);color:var(--a1)}
+.nb.pri{background:linear-gradient(135deg,var(--a1),#0099cc);border-color:var(--a1);color:#0a0f1e}
+.nb.pri:hover{opacity:.9}
+.nb:disabled{opacity:.35;cursor:default}
+.nb.fkok{background:rgba(16,185,129,.1);border-color:var(--ok);color:var(--ok)}
+.nb.fkrev{background:rgba(239,68,68,.1);border-color:var(--err);color:var(--err)}
+
+/* FLASHCARD */
+.fcwrap{perspective:1100px;margin-bottom:14px}
+.fc{position:relative;width:100%;min-height:210px;transform-style:preserve-3d;transition:transform .55s ease;cursor:pointer}
+.fc.flp{transform:rotateY(180deg)}
+.fcf,.fcb{position:absolute;width:100%;min-height:210px;backface-visibility:hidden;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:26px;text-align:center}
+.fcf{background:var(--card);border:1px solid var(--border)}
+.fcb{background:linear-gradient(135deg,rgba(0,201,255,.07),rgba(124,58,237,.07));border:1px solid var(--a2);transform:rotateY(180deg)}
+.fchint{font-size:12px;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:4px}
+.fcq{font-size:clamp(15px,3.5vw,19px);font-weight:700;line-height:1.65;color:var(--text)}
+.fca{font-size:clamp(13px,3vw,16px);font-weight:600;line-height:1.75;color:var(--a1)}
+.fcal{font-size:11px;color:var(--a3);font-weight:700;letter-spacing:1px;margin-bottom:10px;text-transform:uppercase}
+
+/* ESSAY mode */
+.essay-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:14px;animation:fdup .35s ease}
+.essay-card .aq{font-size:clamp(14px,3vw,16px);font-weight:700;line-height:1.75;color:var(--text);margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.ans-area{background:var(--card2);border:1.5px solid var(--border);border-radius:10px;width:100%;padding:12px;font-family:'Tajawal',sans-serif;font-size:14px;color:var(--text);resize:vertical;min-height:80px;transition:border-color .2s}
+.ans-area:focus{outline:none;border-color:var(--a1)}
+.reveal-btn{margin-top:10px;background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(0,201,255,.1));border:1px solid var(--a2);border-radius:10px;padding:10px 18px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;color:#a78bfa;cursor:pointer;transition:all .2s;width:100%}
+.reveal-btn:hover{background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(0,201,255,.15))}
+.model-ans{margin-top:12px;background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.25);border-radius:10px;padding:14px;font-size:14px;color:var(--a3);line-height:1.8;display:none;animation:sld .3s ease}
+.model-ans.show{display:block}
+.model-ans strong{display:block;font-size:11px;letter-spacing:1px;margin-bottom:6px;color:#34d399}
+
+/* REVIEW mode */
+.rv-card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:14px;animation:fdup .35s ease}
+.rv-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.rv-head h3{font-family:'Cairo',sans-serif;font-size:17px;font-weight:800}
+.rv-body{padding:20px 22px}
+.rv-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.rv-item:last-child{border-bottom:none}
+.rv-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:8px}
+.rv-txt{font-size:14px;line-height:1.85;flex:1}
+.rv-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.rv-table th{background:rgba(255,255,255,.05);padding:8px 12px;text-align:right;font-weight:700;border:1px solid var(--border)}
+.rv-table td{padding:8px 12px;border:1px solid var(--border);line-height:1.7}
+
+/* SUMMARY */
+.sumcard{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:30px 22px;text-align:center;display:none;animation:fdup .5s ease}
+.sumcard.show{display:block}
+.sumej{font-size:52px;margin-bottom:10px}
+.sumtit{font-size:20px;font-weight:900;font-family:'Cairo',sans-serif;margin-bottom:6px}
+.sumsub{color:var(--muted);font-size:13px;margin-bottom:22px}
+.sumstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+.ss{background:var(--card2);border-radius:11px;padding:14px 8px}
+.ss .n{font-size:24px;font-weight:900;font-family:'Cairo',sans-serif}
+.ss .l{font-size:11px;color:var(--muted);margin-top:2px}
+.rstbtn{background:linear-gradient(135deg,var(--a2),var(--a1));border:none;border-radius:12px;padding:13px 28px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;transition:opacity .2s;width:100%}
+.rstbtn:hover{opacity:.88}
+
+/* SECTION HEADERS in review */
+.sec-hdr{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border-radius:8px;padding:6px 14px;margin-bottom:14px;font-size:13px;font-weight:700;color:var(--muted)}
+
+.hid{display:none!important}
+
+@keyframes fdwn{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:none}}
+@keyframes fdup{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes sld{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes pgreen{0%,100%{box-shadow:none}50%{box-shadow:0 0 18px rgba(16,185,129,.4)}}
+@keyframes shk{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hdr">
+  <div class="badge">مدرسة حمزة الإعدادية للبنين • الفئة الثالثة</div>
+  <h1>مراجعة العلوم العامة</h1>
+  <p>الصف التاسع | الوحدات 11 – 12 – 14 – 15 | تحصيلي 2025-2026</p>
+</div>
+
+<div class="stats">
+  <div class="sc tot"><div class="n" id="sTot">0</div><div class="l">تمت الإجابة</div></div>
+  <div class="sc ok"><div class="n" id="sOk">0</div><div class="l">صحيح ✅</div></div>
+  <div class="sc err"><div class="n" id="sErr">0</div><div class="l">خطأ ❌</div></div>
+  <div class="sc str"><div class="n" id="sStr">0</div><div class="l">سلسلة 🔥</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="setUnit('all')">🌐 الكل</button>
+  <button class="tab" onclick="setUnit('plant')">🌱 التكاثر في النباتات</button>
+  <button class="tab" onclick="setUnit('human')">👤 التكاثر في الإنسان</button>
+  <button class="tab" onclick="setUnit('universe')">🔭 تطور الكون</button>
+  <button class="tab" onclick="setUnit('disease')">🦠 الأمراض الانتقالية</button>
+</div>
+
+<div class="modes">
+  <div class="mb on" onclick="setMode('mcq')" id="mm-mcq"><span class="ic">📝</span><span class="nm">اختيار متعدد</span></div>
+  <div class="mb" onclick="setMode('essay')" id="mm-essay"><span class="ic">✍️</span><span class="nm">أسئلة مقالية</span></div>
+  <div class="mb" onclick="setMode('flash')" id="mm-flash"><span class="ic">⚡</span><span class="nm">بطاقات مراجعة</span></div>
+  <div class="mb" onclick="setMode('review')" id="mm-review"><span class="ic">📚</span><span class="nm">المعلومات</span></div>
+</div>
+
+<div class="pgwrap"><div class="pgfill" id="pgfill" style="width:0%"></div></div>
+
+<!-- MCQ -->
+<div id="mcqMode">
+  <div class="qcard" id="qcard">
+    <div class="qmeta">
+      <span class="ubadge" id="qbadge">وحدة</span>
+      <span class="qnum" id="qnum">سؤال 1</span>
+    </div>
+    <div class="qtxt" id="qtxt">...</div>
+    <div class="opts" id="opts"></div>
+  </div>
+  <div class="fb" id="fb"><div class="fi" id="fic"></div><div class="ft" id="ftxt"></div></div>
+  <div class="nav">
+    <button class="nb" onclick="prevQ()" id="prevB" disabled>→ السابق</button>
+    <button class="nb pri" onclick="nextQ()" id="nextB">التالي ←</button>
+  </div>
+</div>
+
+<!-- ESSAY -->
+<div id="essayMode" class="hid">
+  <div class="essay-card" id="essayCard">
+    <div class="qmeta">
+      <span class="ubadge" id="ebadge">وحدة</span>
+      <span class="qnum" id="enum">سؤال 1</span>
+    </div>
+    <div class="aq" id="eq">...</div>
+    <textarea class="ans-area" id="userAns" placeholder="اكتب إجابتك هنا..."></textarea>
+    <button class="reveal-btn" onclick="revealEssay()">👁 إظهار الإجابة النموذجية</button>
+    <div class="model-ans" id="modelAns"><strong>✅ الإجابة النموذجية</strong><span id="modelTxt"></span></div>
+  </div>
+  <div class="nav">
+    <button class="nb" onclick="prevEssay()" id="prevE" disabled>→ السابق</button>
+    <button class="nb pri" onclick="nextEssay()" id="nextE">التالي ←</button>
+  </div>
+</div>
+
+<!-- FLASHCARD -->
+<div id="flashMode" class="hid">
+  <div class="fcwrap" onclick="flipCard()">
+    <div class="fc" id="fcard">
+      <div class="fcf"><div class="fchint">👆 اضغط لرؤية الإجابة</div><div class="fcq" id="fcq">...</div></div>
+      <div class="fcb"><div class="fcal">✅ الإجابة</div><div class="fca" id="fca">...</div></div>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="nb fkrev" onclick="fcMark('rev')">🔁 للمراجعة</button>
+    <button class="nb fkok" onclick="fcMark('ok')">✅ أعرفها</button>
+  </div>
+  <div class="nav">
+    <button class="nb" onclick="prevFC()" id="prevF" disabled>→ السابق</button>
+    <button class="nb pri" onclick="nextFC()" id="nextF">التالي ←</button>
+  </div>
+</div>
+
+<!-- REVIEW -->
+<div id="reviewMode" class="hid" id="reviewMode"></div>
+
+<!-- SUMMARY -->
+<div class="sumcard" id="sumCard">
+  <div class="sumej" id="sumEj">🎉</div>
+  <div class="sumtit" id="sumTit">أحسنت!</div>
+  <div class="sumsub" id="sumSub">انتهيت من جميع الأسئلة</div>
+  <div class="sumstats">
+    <div class="ss"><div class="n" id="ssOk" style="color:var(--ok)">0</div><div class="l">صحيح</div></div>
+    <div class="ss"><div class="n" id="ssErr" style="color:var(--err)">0</div><div class="l">خطأ</div></div>
+    <div class="ss"><div class="n" id="ssPct" style="color:var(--a1)">0%</div><div class="l">النسبة</div></div>
+  </div>
+  <button class="rstbtn" onclick="restart()">🔄 إعادة المراجعة</button>
+</div>
+
+</div><!-- /wrap -->
+<script>
+/* ================================================================
+   DATA
+================================================================ */
+
+// MCQ questions - ALL from PDF (units 11,12,14,15)
+const MCQ = [
+  // ─── UNIT 11: Plant Reproduction ───
+  {u:'plant', q:'أين يصل أنبوب اللقاح في عملية الإخصاب؟', o:['القلم','الكربلة','المبيض','البويضة'], a:3},
+  {u:'plant', q:'ما الوصف الصحيح للثمرة؟', o:['زهرة متحولة','بويضة مخصبة','كرسي زهرة منتفخ','مبيض كربلة منتفخ'], a:3},
+  {u:'plant', q:'ما الوصف الصحيح للبذرة؟', o:['زهرة متحولة','بويضة مخصبة','كرسي زهرة منتفخ','مبيض كربلة منتفخ'], a:1},
+  {u:'plant', q:'أي مما يأتي يصف سويداء البذرة؟', o:['مشيج ذكري','بداية الميسم','غلاف يحمي البذرة','مخزن غذاء للبذرة'], a:3},
+  {u:'plant', q:'ما عدد الأنوية في أنبوب اللقاح؟', o:['1','2','3','4'], a:1},
+  {u:'plant', q:'أي مما يأتي تعد طريقة التكاثر في البطاطا؟', o:['درنات','بصيلات','رايزومات','الساق الجارية'], a:0},
+  {u:'plant', q:'لماذا تنتشر البذور بعيداً عن النبات الأم؟', o:['لتحسين شكلها','لتكون المنافسة أقل على الموارد الرئيسة','للحصول على ضوء أكثر','لتتكاثر بسرعة'], a:1},
+  {u:'plant', q:'ما الظروف المناسبة على سطح الميسم لنمو أنبوب اللقاح؟', o:['درجة حرارة عالية','الرطوبة العالية','تركيز السكر على الميسم','الضوء الساطع'], a:2},
+  {u:'plant', q:'أي النباتات التالية تتكاثر بالرايزومات؟', o:['الفراولة','الثوم','الزنجبيل','البطاطس'], a:2},
+  {u:'plant', q:'ما المقصود بالإخصاب في النباتات؟', o:['وصول حبة اللقاح للميسم','اندماج نواة حبة اللقاح مع البويضة','تشكيل أنبوبة اللقاح','إنتاج الثمار'], a:1},
+  {u:'plant', q:'أي النباتات التالية تتكاثر بالسيقان الجارية؟', o:['الزنجبيل','الثوم','الفراولة','البطاطس'], a:2},
+  {u:'plant', q:'أي النباتات التالية تتكاثر بالبصيلات؟', o:['الفراولة','الزنجبيل','الثوم','البطاطس'], a:2},
+  {u:'plant', q:'ما ناتج عملية الإخصاب في النباتات؟', o:['الثمرة','الزهرة','البويضة المخصبة (البذرة)','أنبوبة اللقاح'], a:2},
+  {u:'plant', q:'أي جزء من أجزاء الزهرة يصبح عادة ثمرة؟', o:['الميسم','القلم','المبيض','الكربلة'], a:2},
+  {u:'plant', q:'ما الاختلاف في نبات الفراولة مقارنة بالنباتات الأخرى؟', o:['تتكاثر بالدرنات','بذورها على سطحها الخارجي','أزهارها أكبر','ثمارها أحلى'], a:1},
+  {u:'plant', q:'لماذا تعتقد أن نواة حبة اللقاح تحتاج إلى أنبوب لتنمو فيه؟', o:['لحماية نفسها من الحرارة','لتنتقل بأمان من قمة الميسم إلى المبيض/البويضة','للحصول على الغذاء','لتسريع الإخصاب'], a:1},
+  {u:'plant', q:'ما أهمية وجود نواتين في أنبوب اللقاح؟', o:['لإنتاج مزيد من اللقاح','نواة لإخصاب البويضة ونواة أخرى للتحكم في نمو أنبوب اللقاح','لزيادة سرعة النمو','لحماية الأنبوبة'], a:1},
+  {u:'plant', q:'ما كأس الزهرة؟', o:['الجزء الملون للزهرة','الجزء الذي يلتقي فيه الساق والمبيض','موضع حبوب اللقاح','الجزء المسؤول عن الإخصاب'], a:1},
+
+  // ─── UNIT 12: Human Reproduction ───
+  {u:'human', q:'أي التراكيب التالية مسؤول عن إنتاج الحيوانات المنوية عند الإنسان؟', o:['الرحم','المبيض','الخصية','غدة البروستات'], a:2},
+  {u:'human', q:'ما وظيفة غدة البروستات؟', o:['إنتاج الحيوانات المنوية','زيادة أعداد الحيوانات المنوية','أنبوب لنقل الحيوانات المنوية','إنتاج سائل لتسهيل حركة الحيوانات المنوية'], a:3},
+  {u:'human', q:'أي مما يأتي تعد وظيفة المبيض؟', o:['ينتج البويضات','تزويد البويضة بالمغذيات','تحريك البويضة لقناة فالوب','الاحتفاظ بالبويضة المخصبة'], a:0},
+  {u:'human', q:'أين تتواجد الأهداب التي تساعد على تحريك البويضة؟', o:['الرحم','المبيض','بطانة الرحم','قناة البويضات'], a:3},
+  {u:'human', q:'أي مما يأتي يصف وظيفة الجسم القمي بالحيوان المنوي؟', o:['الإمداد بالطاقة','تخزين المغذيات','اختراق البويضة','يساعد على الحركة'], a:2},
+  {u:'human', q:'ما درجة الحرارة التي تقل عندها حركة الحيوانات المنوية؟', o:['36 درجة فأقل','36 درجة فأعلى','37 درجة فأقل','37 درجة فأعلى'], a:3},
+  {u:'human', q:'أي مما يأتي تعد المدة الزمنية لمرحلة الحيض؟', o:['5 أيام','9 أيام','11 يوم','يوم واحد'], a:0},
+  {u:'human', q:'ما المدة الزمنية التي تعيشها البويضة بعد إطلاقها؟', o:['5 أيام','9 أيام','24 ساعة','48 ساعة'], a:2},
+  {u:'human', q:'أي مما يأتي يحمي الجنين من الصدمات داخل الرحم؟', o:['الخملات','المشيمة','الحبل السري','السائل الأمنيوسي'], a:3},
+  {u:'human', q:'ما مدة الطور الخصب؟', o:['3 أيام','5 أيام','6 أيام','9 أيام'], a:2},
+  {u:'human', q:'أي مما يأتي يصف متالزمة ما قبل الحيض؟', o:['آلام الحيض فقط','تقلصات الرحم فقط','انتباذ بطانة الرحم','تقلبات مزاجية وصداعاً وإرهاقاً'], a:3},
+  {u:'human', q:'ما أهمية وجود الكثير من الميتوكندريا في الحيوانات المنوية؟', o:['تخزين المغذيات','توفير الطاقة للحركة','حماية المادة الوراثية','اختراق البويضة'], a:1},
+  {u:'human', q:'متى يتم إطلاق البويضة في الدورة الشهرية؟', o:['اليوم 5','اليوم 7','اليوم 14','اليوم 21'], a:2},
+  {u:'human', q:'ما مدة الدورة الشهرية عادةً؟', o:['14 يوماً','21 يوماً','28 يوماً','35 يوماً'], a:2},
+  {u:'human', q:'ما بداية الدورة الشهرية عند المرأة؟', o:['مرحلة الإباضة','مرحلة الحيض','الطور الخصب','الطور غير الخصب'], a:1},
+  {u:'human', q:'ما وظيفة الخملات في المشيمة؟', o:['حماية الجنين من الصدمات','زيادة مساحة سطح تبادل المواد','ربط الجنين بالأم','إنتاج الغذاء للجنين'], a:1},
+  {u:'human', q:'ما الذي يزود الجنين بالغذاء والأكسجين عبر المشيمة؟', o:['السائل الأمنيوسي','بطانة الرحم','الحبل السري','الأهداب'], a:2},
+  {u:'human', q:'لماذا توجد الخصيتان خارج الجسم؟', o:['لحمايتهما من الضغط','لأن الحيوانات المنوية تنتج عند 34°م أي أقل من حرارة الجسم','لزيادة الإنتاج','لأسباب وقائية فقط'], a:1},
+  {u:'human', q:'ما الذي يحدث لبطانة الرحم في حال عدم إخصاب البويضة؟', o:['تبقى سميكة دائماً','تتمزق وتتفكك مسببةً الحيض','تنتج هرمونات جديدة','تتحول إلى مشيمة'], a:1},
+  {u:'human', q:'أين يتم إخصاب البويضة عند الإنسان؟', o:['الرحم','المبيض','قناة البيض (قناة فالوب)','بطانة الرحم'], a:2},
+  {u:'human', q:'ما المدة التي يعيشها الحيوان المنوي داخل الرحم؟', o:['24 ساعة','يومان','5 أيام','7 أيام'], a:2},
+
+  // ─── UNIT 14: Universe ───
+  {u:'universe', q:'ما اسم المجرة التي ينتمي إليها نظامنا الشمسي؟', o:['قنطورس','درب التبانة','سديم الجبار','المرأة المسلسلة'], a:1},
+  {u:'universe', q:'ما اسم القوى التي تربط النجوم ببعضها في المجرة؟', o:['الكهربائية','المغناطيسية','الجاذبية','الكهرومغناطيسية'], a:2},
+  {u:'universe', q:'ما نوع المجرة التي تنتمي إليها مجرة درب التبانة؟', o:['الحلزونية','البيضاوية','الإهليلجية','غير المنتظمة'], a:0},
+  {u:'universe', q:'ما التفاعلات التي تطلق الطاقة من النجوم؟', o:['الاحتراق','انشطار نووي','اندماج نووي','تفاعل كيميائي'], a:2},
+  {u:'universe', q:'أي العناصر التالية الأكثر وفرة في الشمس؟', o:['الهيدروجين','النيتروجين','الهيليوم','الأكسجين'], a:0},
+  {u:'universe', q:'ما أكبر كوكب صخري في النظام الشمسي؟', o:['الزهرة','الأرض','المشتري','أورانوس'], a:1},
+  {u:'universe', q:'أين يقع حزام الكويكبات في النظام الشمسي؟', o:['بين المريخ وزحل','بين الأرض والقمر','بين المريخ والمشتري','بين المشتري وزحل'], a:2},
+  {u:'universe', q:'ما الكوكب الأحمر في النظام الشمسي؟', o:['الزهرة','الأرض','المريخ','نبتون'], a:2},
+  {u:'universe', q:'ما سبب دوران الكواكب حول الشمس؟', o:['جاذبية الأرض','جاذبية القمر','جاذبية الشمس','كروية الأرض'], a:2},
+  {u:'universe', q:'ما أبعد الكواكب في النظام الشمسي عن الشمس؟', o:['الزهرة','الأرض','المشتري','نبتون'], a:3},
+  {u:'universe', q:'ما مكونات المذنب؟', o:['فلزات','جليد وغاز','غازات فقط','جليد وصخور'], a:1},
+  {u:'universe', q:'ما عدد أنوية الهيدروجين التي يبدأ بها تفاعل الاندماج النووي؟', o:['1','2','3','4'], a:3},
+  {u:'universe', q:'ما الأصل الذي تكونت منه النجوم والمجرات؟', o:['السديم','النجم الأولي','الثقب الأسود','النجم النيوتروني'], a:0},
+  {u:'universe', q:'ما أقرب الكواكب للشمس؟', o:['الزهرة','الأرض','عطارد','أورانوس'], a:2},
+  {u:'universe', q:'ما سبب الحركة الظاهرية للنجوم في الليل؟', o:['دوران النجوم حول الأرض','دوران القمر حول الأرض','دوران الأرض حول محورها','دوران الأرض حول الشمس'], a:2},
+  {u:'universe', q:'كيف استطاع العلماء رؤية ودراسة المجرات؟', o:['المجهر','الكاميرا','البيروسكوب','التلسكوب القوي'], a:3},
+  {u:'universe', q:'ما المرحلة التي تكون فيها الشمس حالياً؟', o:['نجم أولي','التتابع الرئيس','عملاق أحمر','قزم أبيض'], a:1},
+  {u:'universe', q:'ماذا سيحصل للشمس بعد نحو 5 مليارات سنة؟', o:['تصبح ثقباً أسود','تصبح نجماً نيوترونياً','تصبح عملاقاً أحمر','تنفجر مستعر أعظم'], a:2},
+  {u:'universe', q:'ما الناتج من انفجار مستعر أعظم لنجم كبير؟', o:['قزم أبيض','قزم أسود','نجم نيوتروني أو ثقب أسود','عملاق أحمر'], a:2},
+  {u:'universe', q:'أي الكواكب التالية يُعدّ كوكباً غازياً؟', o:['الأرض','المريخ','المشتري','عطارد'], a:2},
+  {u:'universe', q:'ما الاندماج النووي؟', o:['انشطار النواة الكبيرة','دمج الأنوية الصغيرة لتكوين أنوية أكبر مع إطلاق طاقة','احتراق الغازات','تفاعل كيميائي بين العناصر'], a:1},
+
+  // ─── UNIT 15: Infectious Diseases ───
+  {u:'disease', q:'أي الأمراض يسببه فيروس كوفيد 19؟', o:['الحصبة','كورونا','داء الكلب','جدري الماء'], a:1},
+  {u:'disease', q:'ما مسبب مرض الكوليرا؟', o:['أوليات','فيروس','بكتيريا','فطريات'], a:2},
+  {u:'disease', q:'أي التالية موجود على السطح الخارجي لمسبب المرض؟', o:['النواة','مولد الضد','الجسم المضاد','المادة الوراثية'], a:1},
+  {u:'disease', q:'ما الجهاز الذي ينتج الأجسام المضادة عند دخول مسبب المرض للجسم؟', o:['جهاز المناعة','الجهاز الهضمي','الجهاز الدوري','الهيكل العظمي'], a:0},
+  {u:'disease', q:'أي أنواع المناعة تنتج عند دخول مسبب المرض بسبب العدوى؟', o:['مناعة طبيعية نشطة','مناعة طبيعية سلبية','مناعة اصطناعية نشطة','مناعة اصطناعية سلبية'], a:0},
+  {u:'disease', q:'أي أنواع المناعة تنتج عند انتقال الأجسام المضادة من الأم إلى الجنين؟', o:['مناعة طبيعية نشطة','مناعة طبيعية سلبية','مناعة اصطناعية نشطة','مناعة اصطناعية سلبية'], a:1},
+  {u:'disease', q:'أي أنواع المناعة تنتج عند حقن المريض بلقاح ينتجه العلماء؟', o:['مناعة طبيعية نشطة','مناعة طبيعية سلبية','مناعة اصطناعية نشطة','مناعة اصطناعية سلبية'], a:2},
+  {u:'disease', q:'أي مما يلي يصف لقاح المناعة الاصطناعية النشطة؟', o:['مطهر','مسبب مرض ضعيف أو ميت','أجسام مضادة من مسبب المرض','خلايا حية ضارة من مسبب المرض'], a:1},
+  {u:'disease', q:'ما الخلايا المسؤولة عن إنتاج الأجسام المضادة عند دخول مسبب المرض للجسم مرة أخرى؟', o:['خلايا الجلد','خلايا الذاكرة','خلايا العظام','خلايا الدم الحمراء'], a:1},
+  {u:'disease', q:'كيف تقاوم الأجسام المضادة مسببات الأمراض؟', o:['عن طريق بلعها','عن طريق هضمها','تنتج السموم ضدها','ترتبط بمولد الضد وتعطله'], a:3},
+  {u:'disease', q:'أي أنواع المناعة تنتج عند حقن المريض بأجسام مضادة جاهزة (المصل)؟', o:['مناعة طبيعية نشطة','مناعة طبيعية سلبية','مناعة اصطناعية نشطة','مناعة اصطناعية سلبية'], a:3},
+  {u:'disease', q:'أي أنواع المناعة تنتج عند حقن المريض بلقاح؟', o:['مناعة طبيعية نشطة','مناعة طبيعية سلبية','مناعة اصطناعية نشطة','مناعة اصطناعية سلبية'], a:2},
+  {u:'disease', q:'ماذا تسبب بكتيريا السالمونيلا عند تواجدها في غذاء الإنسان؟', o:['السعال','التهاب الحلق','التسمم الغذائي','الالتهاب الرئوي'], a:2},
+  {u:'disease', q:'كيف تنتقل الأمراض الفطرية؟', o:['السم','الأبواغ','حقن المادة الوراثية في الخلية','عن طريق بعض الحشرات'], a:1},
+  {u:'disease', q:'ما الإجراء الذي يتم اتخاذه لتقليل عدد التطعيمات المعطاة للأطفال؟', o:['إعطاء التطعيمات الفموية','إعطاء أكثر من جرعة تطعيم','لقاحات مركبة بأكثر من نوع من مولدات الضد','الحد من الأمراض التي يتم تطعيم الأطفال ضدها'], a:2},
+  {u:'disease', q:'لماذا يجب الحصول على لقاح سنوي لمرض الأنفلونزا؟', o:['لأنه مميت دائماً','لأن فيروس الأنفلونزا قادر على تغيير مولدات الضد بسرعة كبيرة','لأن اللقاح يفقد تأثيره في الشتاء','لأن الجسم لا يتذكر اللقاح السابق'], a:1},
+  {u:'disease', q:'ما الحواجز الطبيعية في جسم الإنسان لمقاومة المسببات المرضية؟', o:['الأجسام المضادة فقط','الجلد وإفرازات الجسم مثل المخاط والدموع والعرق','خلايا الدم البيضاء فقط','المناعة الاصطناعية'], a:1},
+  {u:'disease', q:'ما وظيفة خلايا الدم البيضاء الكبيرة في الجسم؟', o:['إنتاج الأجسام المضادة','نقل الأكسجين','ابتلاع وهضم البكتيريا والفيروسات','إنتاج مولدات الضد'], a:2},
+  {u:'disease', q:'ما الفيروس؟', o:['كائن حي وحيد الخلية','كائن متعدد الخلايا','جسيمات مكونة من مادة وراثية مغلفة بغلاف بروتيني','بكتيريا صغيرة'], a:2},
+];
+
+// ESSAY questions - ALL from PDF
+const ESSAY = [
+  // Unit 11
+  {u:'plant', q:'لماذا تنتشر البذور بعيداً عن النبات الأم؟', a:'لتكون المنافسة أقل على الموارد الرئيسة، مما يزيد من فرص بقائها حيةً.'},
+  {u:'plant', q:'كيف تتكون البذور؟', a:'عن طريق إخصاب البويضة بنواة حبة اللقاح.'},
+  {u:'plant', q:'لماذا تنتج بعض النباتات البذور بأعداد كبيرة؟', a:'لزيادة وتحسين فرص الانتشار والبقاء.'},
+  {u:'plant', q:'ما المقصود بالإخصاب في النباتات؟', a:'اندماج المادة الوراثية لنواة حبة اللقاح مع المادة الوراثية للبويضة.'},
+  {u:'plant', q:'ماذا ينتج عن عملية الإخصاب في النباتات؟', a:'البويضة المخصبة التي تتحول إلى بذرة.'},
+  {u:'plant', q:'ما أهمية أن يحتوي أنبوب اللقاح على نواتين؟', a:'نواة واحدة لتقوم بعملية إخصاب البويضة، ونواة أخرى للتحكم في نمو أنبوب اللقاح.'},
+  {u:'plant', q:'لماذا تعتقد أن نواة حبة اللقاح تحتاج إلى أنبوب لتنمو فيه؟', a:'لتنتقل نواة حبة اللقاح بأمان من قمة الميسم إلى القاعدة وإلى المبيض/البويضة.'},
+  {u:'plant', q:'ما الظروف المناسبة على سطح الميسم لنمو أنبوب اللقاح؟', a:'تركيز السكر على الميسم يوفر بيئة مناسبة لنمو الأنبوب.'},
+  {u:'plant', q:'كم يستغرق أنبوب اللقاح للوصول إلى البويضة؟', a:'يستغرق يومين إلى ثلاثة أيام للوصول إلى البويضة.'},
+  {u:'plant', q:'اذكر عاملين أساسيين يؤثران في سرعة نمو أنبوب اللقاح.', a:'١- درجة الحرارة، ٢- تركيز الجلوكوز (نوع النبات).'},
+  {u:'plant', q:'ما الاختلاف في نبات الفراولة مقارنة بالنباتات الأخرى؟', a:'بذورها على سطحها الخارجي وليست في داخلها.'},
+  {u:'plant', q:'ما أهمية سويداء البذرة؟', a:'هي مخزن للمواد الغذائية، تُستخدم لمساعدة البذور على النمو.'},
+  {u:'plant', q:'اذكر بعض طرائق انتشار البذور.', a:'القرون المتفجرة – الرياح – الخطافات – إنتاج ثمار مغذية تأكلها الحيوانات – بذور تطفو على سطح الماء.'},
+  {u:'plant', q:'اشرح كيف يُساهم السنجاب في انتشار بذور شجر البلوط.', a:'يخزن السنجاب البذور في العديد من الأماكن بحيث لا يتمكن من تذكرها جميعها، فتنتشر العديد من البذور.'},
+  {u:'plant', q:'ما طرق التكاثر اللاجنسي في النباتات؟', a:'السيقان الجارية – الدرنات – الرايزومات – البراعم العرضية – البصيلات.'},
+  {u:'plant', q:'أي أجزاء النبات تستخدم للتكاثر اللاجنسي؟', a:'الأوراق والسيقان والجذور.'},
+  {u:'plant', q:'صف جميع ميزات النبات التي تدل على أنه يتكاثر جنسياً.', a:'وجود الأزهار وحبوب اللقاح والبويضات وحدوث التلقيح والإخصاب ثم تكون البذور والثمار.'},
+  {u:'plant', q:'اذكر طرق التكاثر اللاجنسي في: البطاطس واليوكا ودوار الشمس.', a:'الدرنات.'},
+  {u:'plant', q:'اذكر طرق التكاثر اللاجنسي في: الفراولة والنعناع.', a:'السيقان الجارية.'},
+  {u:'plant', q:'اذكر طرق التكاثر اللاجنسي في: الزنجبيل والجنجل والكركم.', a:'الرايزوم (هو ساق متحورة قادرة على إنتاج براعم خاصة).'},
+  // Unit 12
+  {u:'human', q:'لماذا توجد الخصيتان خارج الجسم؟', a:'لأن حركة الحيوانات المنوية تقل أو تتوقف عند درجة حرارة 37 درجة فأعلى، وهي درجة حرارة داخل الجسم.'},
+  {u:'human', q:'ما أهمية وجود الكثير من الميتوكندريا في الحيوانات المنوية؟', a:'لتزويدها بالطاقة اللازمة للحركة.'},
+  {u:'human', q:'فسر: الجسم القمي للحيوان المنوي يحتوي على مواد كيميائية.', a:'تساعد على اختراق الحيوان المنوي لغشاء البويضة.'},
+  {u:'human', q:'كيف يتلاءم الحيوان المنوي مع القيام بوظيفة إخصاب البويضة؟', a:'وجود ذيل يساعد على الحركة – كثرة الميتوكندريا لتزويده بالطاقة – الجسم القمي يحتوي على مواد كيميائية تساعد على اختراق غشاء البويضة.'},
+  {u:'human', q:'"تموت العديد من الحيوانات المنوية في طريقها إلى البويضة" كيف يتلاءم الجهاز التناسلي الذكري مع ذلك؟', a:'إنتاج الكثير من الحيوانات المنوية لضمان وصول بعضها.'},
+  {u:'human', q:'لماذا تحتوي البويضات على مخزون كبير من المواد الغذائية؟', a:'لتوفير الطاقة اللازمة للانقسام الخلوي في البويضات المخصبة.'},
+  {u:'human', q:'فسر عدم قدرة البويضة على التحرك من تلقاء نفسها.', a:'لأن الأهداب في قناة البويضات تساعدها على الحركة.'},
+  {u:'human', q:'ماذا يحدث أثناء مرحلة الحيض؟', a:'تتفكك بطانة الرحم وتتمزق مسببةً نزول الدم.'},
+  {u:'human', q:'ماذا يحدث أثناء مرحلة الإباضة؟', a:'تنمو بطانة الرحم وتُطلق البويضة من المبيض.'},
+  {u:'human', q:'ماذا يحدث لبطانة الرحم في حال عدم إخصاب البويضة؟', a:'تبقى بطانة الرحم سميكة لمدة 14 يوماً ثم تتفكك.'},
+  {u:'human', q:'ما المدة التي تعيش فيها البويضة؟ وما المدة التي يعيشها الحيوان المنوي؟', a:'البويضة: 24 ساعة فقط. الحيوان المنوي: حتى 5 أيام داخل الرحم.'},
+  {u:'human', q:'وضح المقصود بالطور الخصب ومدته.', a:'الطور الخصب هو الفترة التي يمكن فيها إخصاب البويضة، ومدته 6 أيام.'},
+  {u:'human', q:'ما العمر التقريبي للإناث عندما يبدأ الحيض؟ ومتى يتوقف؟', a:'يبدأ بين 8-12 سنة، ويتوقف بين 45-55 سنة.'},
+  {u:'human', q:'اذكر آثار الحيض التي تعاني منها الإناث.', a:'آلام الحيض – تقلبات مزاجية وصداعاً وإرهاقاً – الإمساك أو الإسهال.'},
+  {u:'human', q:'ما المقصود بمتلازمة ما قبل الحيض PMS؟', a:'تقلبات مزاجية وصداعاً وإرهاقاً تحدث قبل الدورة الشهرية.'},
+  {u:'human', q:'كيف يمكن تخفيف الآلام الناتجة عن تقلصات الرحم أثناء فترة الحيض؟', a:'الاسترخاء – عدم تناول الملح – عدم شرب الكافيين – تناول المسكنات.'},
+  {u:'human', q:'ما وظيفة الخملات الموجودة بالمشيمة؟', a:'لزيادة كمية العناصر الغذائية التي يمكن إيصالها إلى الجنين (تزيد مساحة سطح التبادل).'},
+  {u:'human', q:'فسر: تنصح الحامل بعدم تناول الجبن الطري.', a:'لأنها تضر بالجنين، إذ ينتقل الضرر عبر المشيمة إلى الجنين.'},
+  {u:'human', q:'لماذا يضر تدخين الأم بالجنين؟', a:'لأن الجنين يحصل على غازات التنفس عن طريق الأم عبر المشيمة، فتنتقل الغازات الضارة إليه.'},
+  // Unit 14
+  {u:'universe', q:'ما أصل المجرات؟ وما القوة التي أدت إلى تقارب مادة السديم؟', a:'أصلها السديم. والقوة هي قوة الجاذبية بين الأجسام.'},
+  {u:'universe', q:'ما التفاعلات التي تطلق الطاقة من النجوم؟ وما شروطها؟', a:'تفاعلات الاندماج النووي. شروطها: حرارة عالية + ضغط هائل.'},
+  {u:'universe', q:'كيف تنتج الطاقة في النجم؟', a:'من خلال تفاعلات الاندماج النووي حيث تندمج أنوية الهيدروجين لتكوين أنوية الهيليوم مع إطلاق طاقة.'},
+  {u:'universe', q:'لماذا تعتبر الشمس نجماً؟', a:'لأنها تطلق الطاقة من نفسها عن طريق الاندماج النووي.'},
+  {u:'universe', q:'ما العامل الذي يعتمد عليه تطور النجوم عبر مليارات السنين؟', a:'كمية الوقود (الهيدروجين) الموجود فيها.'},
+  {u:'universe', q:'صف مراحل دورة حياة الشمس (النجوم الصغيرة).', a:'سديم ← نجم أولي ← التتابع الرئيس ← عملاق أحمر ← قزم أبيض ← قزم أسود.'},
+  {u:'universe', q:'صف مراحل دورة حياة النجوم الكبيرة.', a:'سديم ← نجم أولي ← التتابع الرئيس ← عملاق هائل ← مستعر أعظم ← نجم نيوتروني أو ثقب أسود.'},
+  {u:'universe', q:'قارن بين نجم العملاق الأحمر والقزم الأبيض من حيث الحجم ودرجة الحرارة.', a:'العملاق الأحمر: حجم كبير، درجة حرارة عالية. القزم الأبيض: حجم صغير، درجة حرارة منخفضة.'},
+  {u:'universe', q:'ما الأصل الذي تكونت منه الكواكب؟', a:'غبار من السديم الأصلي الذي أنتج النجوم (ناتجة من انفجار مستعر أعظم).'},
+  {u:'universe', q:'ماذا يحدث للكواكب المصغرة حتى تتحول لكوكب مستقر؟', a:'تتصادم مع بعضها وتنصهر وتشكل أجساماً أكبر فأكبر.'},
+  {u:'universe', q:'ما الفرق بين الكواكب الصخرية والكواكب الغازية مع ذكر أمثلة؟', a:'الصخرية: عطارد، الزهرة، الأرض، المريخ (كثافة أعلى). الغازية: المشتري، زحل، أورانوس، نبتون (كثافة أقل).'},
+  {u:'universe', q:'ما الفرق بين الكويكبات والكواكب القزمة؟', a:'الكويكبات: كواكب مصغرة لم تندمج لتشكل كوكباً (مثل فيستا). الكواكب القزمة: أجسام أكبر مثل بلوتو وسيريس.'},
+  // Unit 15
+  {u:'disease', q:'اذكر ثلاثة من مسببات الأمراض الانتقالية مع أمثلة على كل منها.', a:'البكتيريا: الكوليرا، الكزاز، السل، الخانوق. الفيروسات: كورونا، الحصبة، النكاف، داء الكلب. الفطريات: داء المبيضات، داء الرشاشيات.'},
+  {u:'disease', q:'اذكر طريقتين من طرق انتشار الأمراض الانتقالية.', a:'الرذاذ المتطاير (السعال/العطس) – لمس الأسطح الملوثة – الطعام والشراب الملوث – الاتصال الجسدي بشخص مصاب.'},
+  {u:'disease', q:'اذكر طريقتين من طرق الوقاية من الأمراض الانتقالية.', a:'غسل اليدين بالصابون أو المطهرات – ارتداء الكمامة – التطعيم – طهي الطعام جيداً – تنظيف الأسطح.'},
+  {u:'disease', q:'ما الظروف المناسبة لنمو وانتشار الفطريات المسببة للأمراض؟', a:'وجود الأسطح الرطبة وقلة النظافة.'},
+  {u:'disease', q:'كيف تؤدي البكتيريا المسببة للمرض إلى إصابة الجسم بالمرض؟', a:'من خلال تكاثرها داخل الأجسام عبر الانشطار الثنائي وإنتاج السموم.'},
+  {u:'disease', q:'كيف تنتشر أمراض: الكوليرا، والكزاز؟', a:'الكوليرا: شرب الماء الملوث. الكزاز: تلوث الجروح.'},
+  {u:'disease', q:'ما الموجود على السطح الخارجي لمسبب المرض؟ وما أهميته؟', a:'مولد الضد، وهو بروتين. يرتبط به جسم مضاد معين يُعطله ويتجمع مع الخلايا الغريبة لتُبتلع بواسطة خلايا الدم البيضاء.'},
+  {u:'disease', q:'قارن بين المناعة الطبيعية النشطة والطبيعية السلبية.', a:'الطبيعية النشطة: ينتج الجسم أجساماً مضادة كاستجابة طبيعية للعدوى (مدى الحياة). الطبيعية السلبية: انتقال الأجسام المضادة من الأم للجنين أو الرضاعة (6 أشهر).'},
+  {u:'disease', q:'قارن بين اللقاح والمصل من حيث: مدة المناعة، نوع المناعة، سرعة التأثير.', a:'اللقاح: مدة المناعة عدة سنوات – مناعة اصطناعية نشطة – تأثيره بطيء. المصل: مدة المناعة أسابيع قليلة – مناعة اصطناعية سلبية – تأثيره سريع.'},
+  {u:'disease', q:'فسر: لا يُعد مرض السرطان مرضاً انتقالياً.', a:'لأنه مرض لا ينتج من كائنات حية دقيقة (مسببات مرضية خارجية).'},
+  {u:'disease', q:'لماذا يتم تطعيم الأطفال لمرض معين أكثر من مرة؟', a:'لأن اللقاحات التذكيرية تعمل على إدامة المناعة لفترة طويلة، نظراً لأن الاستجابة المناعية لا تدوم طويلاً عند الأطفال.'},
+];
+
+// FLASHCARDS - comprehensive set
+const FLASH = [
+  // Unit 11
+  {u:'plant', q:'ما هو الإخصاب في النباتات؟', a:'اندماج المادة الوراثية لنواة حبة اللقاح مع المادة الوراثية للبويضة.'},
+  {u:'plant', q:'كم يستغرق أنبوب اللقاح للوصول للبويضة؟', a:'يومان إلى ثلاثة أيام.'},
+  {u:'plant', q:'ما سويداء البذرة؟', a:'مخزن المواد الغذائية في البذرة يساعدها على النمو.'},
+  {u:'plant', q:'ما طرق التكاثر اللاجنسي في النباتات الخمسة؟', a:'الدرنات – السيقان الجارية – الرايزومات – البراعم العرضية – البصيلات.'},
+  {u:'plant', q:'لماذا تنتشر البذور؟', a:'لتجنب المنافسة مع النبات الأصلي وزيادة فرص البقاء.'},
+  {u:'plant', q:'ما ناتج عملية الإخصاب؟', a:'البويضة المخصبة التي تتحول إلى بذرة.'},
+  {u:'plant', q:'ما الثمرة؟', a:'مبيض الكربلة (الجزء الذي يُنتج الثمرة بعد الإخصاب).'},
+  {u:'plant', q:'أعطِ مثالاً على نبات له بذور على سطحه الخارجي.', a:'الفراولة.'},
+  {u:'plant', q:'ماذا تحتوي أنبوبة اللقاح من أنوية؟', a:'نواتين: نواة الأنبوبة للتحكم في نموها، ونواة حبة اللقاح لإخصاب البويضة.'},
+  {u:'plant', q:'ما النباتات التي تتكاثر بالدرنات؟', a:'البطاطس، اليوكا، دوار الشمس، الكسافا.'},
+  {u:'plant', q:'ما النباتات التي تتكاثر بالسيقان الجارية؟', a:'الفراولة، النعناع، نبات العنكبوت.'},
+  {u:'plant', q:'ما النباتات التي تتكاثر بالرايزومات؟', a:'الزنجبيل، الجنجل، الكركم، زهرة السوسن.'},
+  {u:'plant', q:'ما النباتات التي تتكاثر بالبصيلات؟', a:'الثوم، النرجس البري.'},
+  // Unit 12
+  {u:'human', q:'لماذا تُحفظ الخصيتان خارج الجسم؟', a:'لأن الحيوانات المنوية تنتج عند 34°م (أقل من حرارة الجسم 37°م).'},
+  {u:'human', q:'ما وظيفة الميتوكندريا في الحيوانات المنوية؟', a:'توفير الطاقة للحركة.'},
+  {u:'human', q:'ما وظيفة الجسم القمي في الحيوان المنوي؟', a:'يحتوي على مواد كيميائية تساعد على اختراق غشاء البويضة.'},
+  {u:'human', q:'ما مدة الدورة الشهرية وأين تبدأ؟', a:'28 يوماً، تبدأ بمرحلة الحيض (5 أيام).'},
+  {u:'human', q:'متى تحدث الإباضة في الدورة الشهرية؟', a:'في اليوم الرابع عشر من بداية الدورة.'},
+  {u:'human', q:'كم تعيش البويضة؟ وكم يعيش الحيوان المنوي؟', a:'البويضة: 24 ساعة. الحيوان المنوي: حتى 5 أيام.'},
+  {u:'human', q:'ما الطور الخصب ومدته؟', a:'الفترة التي يمكن فيها إخصاب البويضة، مدتها 6 أيام.'},
+  {u:'human', q:'ما وظيفة المشيمة؟', a:'تبادل المواد (غذاء وأكسجين وفضلات) بين الأم والجنين دون اختلاط الدماء.'},
+  {u:'human', q:'ما وظيفة الخملات في المشيمة؟', a:'زيادة مساحة سطح تبادل المواد بين الأم والجنين.'},
+  {u:'human', q:'ما وظيفة السائل الأمنيوسي؟', a:'يحيط بالجنين لحمايته من الصدمات.'},
+  {u:'human', q:'ما وظيفة الحبل السري؟', a:'يزود الجنين بالغذاء والأكسجين عبر المشيمة، ويزيل الفضلات.'},
+  {u:'human', q:'ما متلازمة ما قبل الحيض PMS؟', a:'تقلبات مزاجية وصداع وإرهاق تحدث قبل الدورة الشهرية.'},
+  {u:'human', q:'كيف تُخفف آلام الحيض؟', a:'الاسترخاء، عدم تناول الملح، عدم شرب الكافيين، تناول المسكنات.'},
+  // Unit 14
+  {u:'universe', q:'ما الاندماج النووي؟', a:'اندماج الأنوية الصغيرة لتكوين أنوية أكبر مع إطلاق طاقة وعناصر جديدة.'},
+  {u:'universe', q:'ما شروط الاندماج النووي؟', a:'حرارة عالية + ضغط هائل.'},
+  {u:'universe', q:'ما مراحل تطور النجوم الصغيرة كالشمس؟', a:'سديم ← نجم أولي ← التتابع الرئيس ← عملاق أحمر ← قزم أبيض ← قزم أسود.'},
+  {u:'universe', q:'ما مراحل تطور النجوم الكبيرة؟', a:'سديم ← نجم أولي ← التتابع الرئيس ← عملاق هائل ← مستعر أعظم ← نجم نيوتروني أو ثقب أسود.'},
+  {u:'universe', q:'أنواع المجرات الثلاثة؟', a:'حلزونية (مثل درب التبانة) – بيضاوية/إهليلجية – غير منتظمة.'},
+  {u:'universe', q:'ما الكواكب الصخرية؟', a:'عطارد، الزهرة، الأرض، المريخ (كثافة أعلى).'},
+  {u:'universe', q:'ما الكواكب الغازية؟', a:'المشتري، زحل، أورانوس، نبتون (كثافة أقل).'},
+  {u:'universe', q:'ما الكواكب القزمة في المجرة؟', a:'بلوتو، سيريس، هيوما، إيريس.'},
+  {u:'universe', q:'ما الكويكبات وأين تقع؟', a:'كواكب مصغرة لم تندمج، تقع في حزام الكويكبات بين المريخ والمشتري.'},
+  {u:'universe', q:'ما مكونات المذنبات؟ اذكر مثالاً.', a:'ماء متجمد وثاني أكسيد الكربون وبعض المواد الأخرى. مثال: مذنب هالي.'},
+  // Unit 15
+  {u:'disease', q:'ما الفرق بين مولد الضد والجسم المضاد؟', a:'مولد الضد: بروتين على سطح المسبب المرضي. الجسم المضاد: بروتين ينتجه جهاز المناعة يرتبط بمولد الضد ويعطله.'},
+  {u:'disease', q:'ما أنواع المناعة الأربعة؟', a:'طبيعية نشطة (إصابة) – طبيعية سلبية (من الأم) – اصطناعية نشطة (لقاح) – اصطناعية سلبية (مصل).'},
+  {u:'disease', q:'الفرق بين اللقاح والمصل من حيث مدة المناعة وسرعة التأثير؟', a:'اللقاح: سنوات، تأثير بطيء. المصل: أسابيع قليلة، تأثير سريع.'},
+  {u:'disease', q:'ما خلايا الذاكرة؟', a:'خلايا تبقى في الجسم بعد الشفاء لمهاجمة نفس المسبب المرضي إذا عاد مرة أخرى.'},
+  {u:'disease', q:'ما الحواجز الطبيعية في الجسم لمقاومة الأمراض؟', a:'الجلد، المخاط، الدموع، العرق، خلايا الدم البيضاء الكبيرة.'},
+  {u:'disease', q:'لماذا يجب أخذ لقاح الأنفلونزا سنوياً؟', a:'لأن فيروس الأنفلونزا يغيّر مولدات الضد بسرعة كبيرة، فيصبح اللقاح القديم غير فعال.'},
+  {u:'disease', q:'أمثلة على أمراض تسببها البكتيريا.', a:'الكوليرا، الكزاز، السل، الخانوق.'},
+  {u:'disease', q:'أمثلة على أمراض تسببها الفيروسات.', a:'كورونا، داء الكلب، جدري الماء، النكاف، الحصبة.'},
+];
+
+// REVIEW INFO - complete content from all pages
+const REVIEW = [
+  {
+    u:'plant', icon:'🌱', color:'var(--a3)', title:'الوحدة 11: التكاثر في النباتات',
+    sections:[
+      {title:'أنبوبة اللقاح والإخصاب', items:[
+        'بعد وصول حبة اللقاح للميسم تبدأ بتشكيل ما يسمى بأنبوبة اللقاح.',
+        'تحتوي أنبوبة اللقاح على نواتين: نواة الأنبوبة لتكوين أنبوب اللقاح – نواة حبة اللقاح لإخصاب البويضة.',
+        'لتكوين أنبوب اللقاح تحتاج حبة اللقاح للغذاء، وتحصل عليه من الميسم (يحتوي على محاليل سكرية وأملاح).',
+        'يستغرق أنبوب اللقاح يومين أو 3 أيام للوصول للبويضة.',
+        'يتم إنتاج البذور عن طريق إخصاب البويضة بنواة حبة اللقاح.',
+        'الإخصاب هو اندماج المادة الوراثية لنواة حبة اللقاح مع المادة الوراثية للبويضة.',
+        'عاملان يؤثران في سرعة نمو أنبوب اللقاح: درجة الحرارة وتركيز الجلوكوز.',
+      ]},
+      {title:'البذرة والثمرة', items:[
+        'الثمار عبارة عن مبيض الكربلة.',
+        'بعض الثمار بذورها للخارج على سطحها مثل: الفراولة.',
+        'تحتوي البذرة على غلاف لحمايتها، وسويداء البذرة وهو مخزن المواد الغذائية.',
+        'كأس الزهرة هو الجزء الذي يلتقي فيه الساق والمبيض.',
+        'تنتشر البذور لتجنب المنافسة مع النبات الأصلي.',
+      ]},
+      {title:'طرق انتشار البذور', items:[
+        'القرون المتفجرة.',
+        'الرياح.',
+        'الماء (بذور تطفو).',
+        'بذور لها خطافات تتعلق بفراء الحيوانات.',
+        'إنتاج ثمار مغذية تأكلها الحيوانات (مثل الرمان والأفوكادو والبرتقال).',
+      ]},
+      {title:'طرق التكاثر اللاجنسي في النباتات', items:[
+        'الدرنات: مثل البطاطس، اليوكا، دوار الشمس، الكسافا.',
+        'السيقان الجارية: مثل الفراولة، النعناع، نبات العنكبوت.',
+        'الرايزومات (ساق متحورة قادرة على إنتاج براعم خاصة): مثل الزنجبيل، الجنجل، الكركم، زهرة السوسن.',
+        'البراعم العرضية: مثل نبات الأشفيرية وتولميا مينزيسي.',
+        'البصيلات: مثل الثوم، النرجس البري.',
+        'أجزاء النبات المستخدمة للتكاثر اللاجنسي: الأوراق والسيقان والجذور.',
+      ]},
+    ]
+  },
+  {
+    u:'human', icon:'👤', color:'var(--a4)', title:'الوحدة 12: التكاثر في الإنسان',
+    sections:[
+      {title:'الجهاز التناسلي الذكري', items:[
+        'تقوم الخصية بإنتاج الحيوانات المنوية.',
+        'تُحفظ الخصيتان خارج الجسم لأن الحيوانات المنوية تنتج عند درجة حرارة 34°م.',
+        'تفرز غدة البروستاتا سائلاً يوفر وسطاً للحيوان المنوي للسباحة ويحتوي على سكر كمصدر غذاء.',
+        'مكونات الحيوان المنوي: رأس (نواة + جسم قمي) – قطعة وسطى (ميتوكندريا) – ذيل.',
+        'الجسم القمي يحتوي على مواد كيميائية لاختراق غشاء البويضة.',
+        'الميتوكندريا توفر الطاقة للحركة.',
+        'يعيش الحيوان المنوي حتى 5 أيام داخل الرحم.',
+      ]},
+      {title:'الجهاز التناسلي الأنثوي', items:[
+        'يقوم المبيض بإنتاج البويضات.',
+        'تتحرك البويضة بواسطة الأهداب في قناة البويضات.',
+        'تحتوي البويضة على غشاء خارجي للحماية والتأكد من دخول حيوان منوي واحد فقط.',
+        'تحتوي البويضة على عناصر غذائية لتوفير الطاقة للانقسام الخلوي.',
+        'تعيش البويضة 24 ساعة فقط.',
+        'يتم إخصاب البويضة في قناة البيض، وتتحرك البويضة المخصبة لتنغرس في بطانة الرحم.',
+        'تتغذى البويضة المخصبة من خلال بطانة الرحم.',
+      ]},
+      {title:'الدورة الشهرية عند الإناث', items:[
+        'مدة الدورة الشهرية: 28 يوماً.',
+        'تبدأ بمرحلة الحيض (نزول الدم) مدة 5 أيام (قد تتراوح 3-8 أيام).',
+        'يحدث الحيض بسبب تمزق وتفكك بطانة الرحم.',
+        'يمتد الطور الخصب إلى 6 أيام.',
+        'إطلاق البويضة في قناة البيض بعد 14 يوماً من بدء الدورة (الإباضة).',
+        'تبقى بطانة الرحم سميكة لمدة 14 يوماً بعد الإباضة ثم تتمزق.',
+        'يبدأ الحيض عند البلوغ (8-12 سنة) ويتوقف بين 45-55 سنة.',
+        'متلازمة ما قبل الحيض PMS: تقلبات مزاجية وصداع وإرهاق.',
+        'طرق تخفيف آلام الحيض: الاسترخاء، عدم تناول الملح، عدم شرب الكافيين، المسكنات.',
+        'الانتباذ البطاني الرحمي يُعالج بالهرمونات أو الجراحة.',
+      ]},
+      {title:'الأم الحامل والجنين', items:[
+        'الحبل السري يربط الجنين بالمشيمة.',
+        'يزود الحبل السري الجنين بالغذاء والأكسجين عبر المشيمة، ويزيل الفضلات.',
+        'يتم تبادل المواد بين الأم والجنين عبر المشيمة دون اختلاط الدم.',
+        'الخملات: تراكيب في المشيمة تزيد مساحة سطح تبادل المواد.',
+        'يحيط السائل الأمنيوسي بالجنين لحمايته من الصدمات.',
+        'أغذية مضرة بالجنين: الجبن الطري، اللحوم غير المطهية جيداً، بعض الأسماك.',
+        'تدخين الأم يضر بالجنين لأنه يحصل على غازات التنفس عن طريق الأم.',
+      ]},
+    ]
+  },
+  {
+    u:'universe', icon:'🔭', color:'#a78bfa', title:'الوحدة 14: تطور الكون المرئي',
+    sections:[
+      {title:'المجرات', items:[
+        'المجرة: مجموعة كبيرة جداً من النجوم ترتبط معاً بقوة تجاذب (الجاذبية) ضمن مساحة محددة.',
+        'يتم جمع المعلومات عن المجرات باستخدام تلسكوبات قوية.',
+        'أنواع المجرات: الحلزونية (لها أذرع متعددة تدور خارجها) – البيضاوية/الإهليلجية (شبه كروية) – غير المنتظمة (ليس لها شكل واضح).',
+        'مجرة درب التبانة: حلزونية النوع، وتنتمي إليها مجموعتنا الشمسية.',
+        'حركة النجوم في المجرة الحلزونية: تتحرك في تجمعات حول مركز المجرة.',
+        'حركة النجوم في المجرة الإهليلجية: حركة عشوائية.',
+      ]},
+      {title:'الاندماج النووي والنجوم', items:[
+        'الاندماج النووي: اندماج الأنوية الصغيرة إلى أنوية أكبر، ينتج طاقة + عناصر جديدة.',
+        'شروط الاندماج النووي: حرارة عالية + ضغط هائل.',
+        'معظم النجوم متكونة من غاز الهيدروجين وكمية ضئيلة من عناصر أخرى مثل الهيليوم والكربون والأكسجين.',
+        'يبدأ تشكل النجوم عندما تسحب قوى الجاذبية المواد إلى بعضها في السديم فيتكون النجم الأولي.',
+        'تفاعل الاندماج: 4 أنوية هيدروجين ← نواة هيليوم + طاقة.',
+      ]},
+      {title:'تطور النجوم الصغيرة (كالشمس)', items:[
+        'سديم ← نجم أولي ← التتابع الرئيس ← عملاق أحمر ← قزم أبيض ← قزم أسود.',
+        'الشمس تعد نجماً صغيراً وستتحول إلى نجم عملاق أحمر بعد نحو 5 مليارات سنة.',
+        'الشمس حالياً في مرحلة التتابع الرئيس.',
+        'العامل الذي يعتمد عليه تطور النجوم: كمية الوقود (الهيدروجين) الموجود فيها.',
+      ]},
+      {title:'تطور النجوم الكبيرة', items:[
+        'سديم ← نجم أولي ← التتابع الرئيس ← عملاق هائل ← مستعر أعظم ← نجم نيوتروني أو ثقب أسود.',
+        'يتم إنتاج العناصر الثقيلة عند انفجار المستعر الأعظم.',
+        'تتشكل الكواكب من مواد ناتجة من انفجار المستعر الأعظم.',
+      ]},
+      {title:'النظام الشمسي والأجرام السماوية', items:[
+        'الكواكب الصخرية (كثافة أعلى): عطارد – الزهرة – الأرض – المريخ.',
+        'الكواكب الغازية (كثافة أقل): المشتري – زحل – أورانوس – نبتون.',
+        'أقرب كوكب للشمس: عطارد. أبعد كوكب: نبتون.',
+        'أكبر كوكب: المشتري. أكبر كوكب صخري: الأرض.',
+        'الكواكب القزمة: بلوتو، سيريس، هيوما، إيريس.',
+        'الكويكبات: كواكب مصغرة لم تندمج لتشكل كوكباً (مثل فيستا) – تقع في حزام بين المريخ والمشتري.',
+        'المذنبات: ماء متجمد وثاني أكسيد الكربون وبعض المواد. مثال: مذنب هالي، مذنب هيل بوب.',
+        'القرص الكوكبي الأولي: مواد عالية الكثافة تدور حول النجم في مستوى مسطح.',
+        'سبب دوران الكواكب حول الشمس: جاذبية الشمس.',
+        'سبب الحركة الظاهرية للنجوم في الليل: دوران الأرض حول محورها.',
+      ]},
+    ]
+  },
+  {
+    u:'disease', icon:'🦠', color:'var(--a5)', title:'الوحدة 15: الأمراض الانتقالية',
+    sections:[
+      {title:'مسببات الأمراض الانتقالية', items:[
+        'البكتيريا: الكوليرا، الكزاز، السل، الخانوق.',
+        'الفيروسات (جسيمات من مادة وراثية مغلفة بغلاف بروتيني): كورونا، داء الكلب، جدري الماء، النكاف، الحصبة.',
+        'الفطريات (تنتشر بالأبواغ): داء المبيضات، داء الرشاشيات، داء الشعريات المبوغة.',
+        'بكتيريا السالمونيلا تسبب التسمم الغذائي.',
+        'الكوليرا تنتشر بشرب الماء الملوث. الكزاز بتلوث الجروح.',
+      ]},
+      {title:'طرق انتشار الأمراض الانتقالية والوقاية منها', items:[
+        'طرق الانتشار: الرذاذ المتطاير (السعال/العطس) – لمس الأسطح الملوثة – لدغات الحيوانات – الطعام والشراب الملوث – الاتصال الجسدي بشخص مصاب – استخدام أدوات المصاب.',
+        'طرق الوقاية: غسل اليدين بالصابون أو المطهرات – تنظيف الأسطح – ارتداء القفازات والأقنعة – طهي الطعام جيداً – التطعيم.',
+      ]},
+      {title:'جهاز المناعة', items:[
+        'المناعة: قدرة جسم الإنسان على مقاومة عدوى معينة.',
+        'مولدات الضد: بروتينات توجد على السطح الخارجي للمسببات المرضية.',
+        'الأجسام المضادة: بروتينات تهاجم مولدات الضد وتعطلها.',
+        'لكل مولد ضد جسم مضاد خاص يرتبط به، تتجمع الخلايا الغريبة لتُبتلع بواسطة خلايا الدم البيضاء.',
+        'خلايا الذاكرة: تبقى في الجسم لمهاجمة مسبب المرض إذا ظهر مرة أخرى.',
+        'الحواجز المادية الطبيعية: الجلد، المخاط، الدموع، العرق.',
+        'خلايا الدم البيضاء الكبيرة: تبتلع وتهضم البكتيريا والفيروسات.',
+      ]},
+      {title:'أنواع المناعة', items:[
+        'مناعة طبيعية نشطة: ينتج الجسم أجساماً مضادة كاستجابة طبيعية للعدوى. مدتها مدى الحياة.',
+        'مناعة طبيعية سلبية: انتقال الأجسام المضادة من الأم للجنين (عبر المشيمة أو الرضاعة). مدتها 6 أشهر.',
+        'مناعة اصطناعية نشطة: التطعيم بمسبب مرض ضعيف أو ميت. مدتها عدة سنوات، تأثيرها بطيء.',
+        'مناعة اصطناعية سلبية: حقن أجسام مضادة جاهزة (المصل) من كائن حي لآخر. مدتها أسابيع، تأثيرها سريع.',
+      ]},
+      {title:'اللقاحات والتطعيم', items:[
+        'اللقاح: شكل ضعيف أو ميت من أحد أشكال الكائنات الحية الدقيقة المسببة للمرض.',
+        'قد يكون اللقاح على شكل حقنة أو دواء فموي.',
+        'بعض اللقاحات مركبة (أكثر من مولد ضد في حقنة واحدة) لتقليل عدد الحقن للأطفال.',
+        'لقاح الأنفلونزا يُؤخذ سنوياً لأن الفيروس يغير مولدات الضد بسرعة.',
+        'يتطلب الأطفال أكثر من جرعة لأن الاستجابة المناعية لا تدوم طويلاً عندهم.',
+        'برنامج التطعيم في قطر يحد من: التهاب الكبد B، الحصبة، الحصبة الألمانية، النكاف، الخانوق، شلل الأطفال، السعال الديكي.',
+      ]},
+    ]
+  }
+];
+
+/* ================================================================
+   STATE
+================================================================ */
+let unit='all', mode='mcq';
+let qArr=[], qIdx=0, answered=false;
+let eArr=[], eIdx=0;
+let fArr=[], fIdx=0, fFlip=false;
+let rvIdx=0;
+let stats={c:0,w:0,t:0,s:0};
+
+/* ================================================================
+   HELPERS
+================================================================ */
+const $=id=>document.getElementById(id);
+const shuf=a=>[...a].sort(()=>Math.random()-.5);
+const unitLabels={plant:'التكاثر في النباتات',human:'التكاثر في الإنسان',universe:'تطور الكون',disease:'الأمراض الانتقالية'};
+
+function filter(arr){ return unit==='all'?shuf(arr):shuf(arr.filter(x=>x.u===unit)); }
+
+function updStats(){
+  $('sTot').textContent=stats.t;
+  $('sOk').textContent=stats.c;
+  $('sErr').textContent=stats.w;
+  $('sStr').textContent=stats.s;
+  $('pgfill').style.width=qArr.length?(qIdx/qArr.length*100)+'%':'0%';
+}
+
+/* ================================================================
+   SET UNIT / MODE
+================================================================ */
+function setUnit(u){
+  unit=u;
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    t.classList.toggle('on',['all','plant','human','universe','disease'][i]===u);
+  });
+  restart();
+}
+
+function setMode(m){
+  mode=m;
+  ['mcq','essay','flash','review'].forEach(x=>{
+    $('mm-'+x)?.classList.toggle('on',x===m);
+    $(x+'Mode')?.classList.toggle('hid',x!==m);
+  });
+  $('sumCard').classList.remove('show');
+  if(m==='mcq'){ qArr=filter(MCQ); qIdx=0; answered=false; renderMCQ(); }
+  else if(m==='essay'){ eArr=filter(ESSAY); eIdx=0; renderEssay(); }
+  else if(m==='flash'){ fArr=filter(FLASH); fIdx=0; renderFlash(); }
+  else if(m==='review'){ rvIdx=0; renderReview(); }
+  updStats();
+}
+
+/* ================================================================
+   MCQ
+================================================================ */
+function renderMCQ(){
+  if(qIdx>=qArr.length){ showSum(); return; }
+  const q=qArr[qIdx];
+  answered=false;
+  const card=$('qcard');
+  card.className='qcard '+q.u;
+  $('qbadge').textContent=unitLabels[q.u];
+  $('qbadge').className='ubadge '+q.u;
+  $('qnum').textContent=`سؤال ${qIdx+1} من ${qArr.length}`;
+  $('qtxt').textContent=q.q;
+
+  const letters=['أ','ب','ج','د'];
+  $('opts').innerHTML=q.o.map((opt,i)=>
+    `<button class="opt" onclick="pickOpt(${i},this)">`+
+    `<span class="lt">${letters[i]}</span>${opt}</button>`
+  ).join('');
+
+  const fb=$('fb');
+  fb.className='fb';
+  $('prevB').disabled=qIdx===0;
+  $('nextB').textContent=qIdx===qArr.length-1?'📊 النتيجة':'التالي ←';
+  updStats();
+}
+
+function pickOpt(i,btn){
+  if(answered)return;
+  answered=true;
+  const q=qArr[qIdx];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const fb=$('fb');
+  if(i===q.a){
+    btn.classList.add('cpick');
+    stats.c++; stats.s++; stats.t++;
+    fb.className='fb show cfb';
+    $('fic').textContent='✅';
+    $('ftxt').innerHTML='<strong style="color:var(--ok)">إجابة صحيحة! 🎉</strong>';
+  } else {
+    btn.classList.add('wpick');
+    document.querySelectorAll('.opt')[q.a].classList.add('rvc');
+    stats.w++; stats.s=0; stats.t++;
+    fb.className='fb show wfb';
+    $('fic').textContent='❌';
+    $('ftxt').innerHTML=`إجابة خاطئة. الصواب: <span class="ca">${q.o[q.a]}</span>`;
+  }
+  updStats();
+}
+
+function nextQ(){
+  qIdx++;
+  renderMCQ();
+}
+function prevQ(){
+  if(qIdx>0){ qIdx--; renderMCQ(); }
+}
+
+/* ================================================================
+   ESSAY
+================================================================ */
+function renderEssay(){
+  if(eIdx>=eArr.length){ showSum(); return; }
+  const e=eArr[eIdx];
+  $('ebadge').textContent=unitLabels[e.u];
+  $('ebadge').className='ubadge '+e.u;
+  $('enum').textContent=`سؤال ${eIdx+1} من ${eArr.length}`;
+  $('eq').textContent=e.q;
+  $('userAns').value='';
+  $('modelAns').classList.remove('show');
+  $('modelTxt').textContent=e.a;
+  $('prevE').disabled=eIdx===0;
+  $('nextE').textContent=eIdx===eArr.length-1?'📊 النتيجة':'التالي ←';
+  $('pgfill').style.width=(eIdx/eArr.length*100)+'%';
+}
+function revealEssay(){
+  $('modelAns').classList.add('show');
+}
+function nextEssay(){
+  eIdx++;
+  if(eIdx>=eArr.length){ showSum(); return; }
+  renderEssay();
+}
+function prevEssay(){
+  if(eIdx>0){ eIdx--; renderEssay(); }
+}
+
+/* ================================================================
+   FLASHCARD
+================================================================ */
+function renderFlash(){
+  if(fIdx>=fArr.length){ showSum(); return; }
+  const f=fArr[fIdx];
+  fFlip=false;
+  $('fcard').classList.remove('flp');
+  $('fcq').textContent=f.q;
+  $('fca').textContent=f.a;
+  $('prevF').disabled=fIdx===0;
+  $('nextF').textContent=fIdx===fArr.length-1?'📊 النتيجة':'التالي ←';
+  $('pgfill').style.width=(fIdx/fArr.length*100)+'%';
+}
+function flipCard(){
+  fFlip=!fFlip;
+  $('fcard').classList.toggle('flp',fFlip);
+}
+function fcMark(t){
+  if(t==='ok'){ stats.c++; stats.s++; } else { stats.w++; stats.s=0; }
+  stats.t++;
+  updStats();
+  fIdx++;
+  renderFlash();
+}
+function prevFC(){ if(fIdx>0){ fIdx--; renderFlash(); } }
+function nextFC(){ fIdx++; renderFlash(); }
+
+/* ================================================================
+   REVIEW
+================================================================ */
+function renderReview(){
+  const list=unit==='all'?REVIEW:REVIEW.filter(r=>r.u===unit);
+  if(!list.length){ $('reviewMode').innerHTML='<div class="rv-card" style="padding:22px;text-align:center;color:var(--muted)">لا توجد بيانات للوحدة المختارة</div>'; return; }
+  const rv=list[rvIdx%list.length];
+
+  let html=`<div class="rv-card">
+    <div class="rv-head" style="border-right:4px solid ${rv.color}">
+      <span style="font-size:24px">${rv.icon}</span>
+      <h3 style="color:${rv.color}">${rv.title}</h3>
+      <span style="margin-right:auto;font-size:12px;color:var(--muted)">${(rvIdx%list.length)+1}/${list.length}</span>
+    </div>
+    <div class="rv-body">`;
+
+  rv.sections.forEach(sec=>{
+    html+=`<div class="sec-hdr">📌 ${sec.title}</div><div>`;
+    sec.items.forEach(item=>{
+      html+=`<div class="rv-item">
+        <div class="rv-dot" style="background:${rv.color}"></div>
+        <div class="rv-txt">${item}</div>
+      </div>`;
+    });
+    html+=`</div><div style="height:14px"></div>`;
+  });
+
+  html+=`</div></div>`;
+
+  html+=`<div class="nav">
+    <button class="nb" onclick="rvPrev()">→ السابق</button>
+    <button class="nb pri" onclick="rvNext()">التالي ←</button>
+  </div>`;
+
+  $('reviewMode').innerHTML=html;
+}
+function rvNext(){
+  const list=unit==='all'?REVIEW:REVIEW.filter(r=>r.u===unit);
+  rvIdx=(rvIdx+1)%list.length;
+  renderReview();
+}
+function rvPrev(){
+  const list=unit==='all'?REVIEW:REVIEW.filter(r=>r.u===unit);
+  rvIdx=(rvIdx-1+list.length)%list.length;
+  renderReview();
+}
+
+/* ================================================================
+   SUMMARY
+================================================================ */
+function showSum(){
+  ['mcqMode','essayMode','flashMode'].forEach(id=>$(id)?.classList.add('hid'));
+  const sc=$('sumCard'); sc.classList.add('show');
+  const pct=stats.t?Math.round(stats.c/stats.t*100):0;
+  $('ssOk').textContent=stats.c;
+  $('ssErr').textContent=stats.w;
+  $('ssPct').textContent=pct+'%';
+  let ej='😊',ti='استمر في المراجعة!';
+  if(pct>=90){ej='🏆';ti='ممتاز جداً! درجة رائعة!';}
+  else if(pct>=75){ej='⭐';ti='جيد جداً! أنت على الطريق الصحيح';}
+  else if(pct>=60){ej='📚';ti='جيد، راجع نقاط الضعف مجدداً';}
+  else if(pct>=50){ej='💪';ti='تحتاج مراجعة إضافية';}
+  else {ej='🔄';ti='راجع المعلومات أولاً ثم أعد المحاولة';}
+  $('sumEj').textContent=ej;
+  $('sumTit').textContent=ti;
+  $('sumSub').textContent=`أجبت على ${stats.t} سؤال، الصحيح: ${stats.c}، الخطأ: ${stats.w} (${pct}%)`;
+  $('pgfill').style.width='100%';
+}
+
+function restart(){
+  stats={c:0,w:0,t:0,s:0};
+  rvIdx=0;
+  $('sumCard').classList.remove('show');
+  setMode(mode);
+}
+
+/* boot */
+window.addEventListener('DOMContentLoaded',()=>{
+  qArr=filter(MCQ);
+  renderMCQ();
+  updStats();
+});
+</script>
+</body>
+</html>
